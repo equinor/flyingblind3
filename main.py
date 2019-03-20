@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import bfs
 
 import rospy
 
@@ -90,6 +91,8 @@ def main():
 
     # Get map as 2D list
     world_map = util.parse_map(raw_map)
+
+    shortest_path = bfs.bfs(world_map, (0,0), (goal.y, goal.x))
 
     # Print resources
     print("Wall layout:")
