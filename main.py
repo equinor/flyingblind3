@@ -26,6 +26,44 @@ def boost_callback(msg):
     global boosts
     boosts = msg.poses
 
+def goto(x,y,rospy,rate,drone):
+    print('goal is', goal)
+    x = x + 0.5
+    y = y + 0.5
+    loccounter = 0
+
+    while not rospy.is_shutdown():
+        rate.sleep()
+        # -------------------------------
+        # ------Replace this example-----
+        # ---------with your code!-------
+        # -------------------------------
+        # Find how far we are away from target
+        distance_to_target = ((x - drone.position.x)**2 +
+                              (y - drone.position.y)**2)**0.5
+
+        # Do special action if we are close
+        if distance_to_target < 0.1:
+            loccounter = loccounter+1
+            # Print current distance to goal. Note that we 
+            # wont reach the goal, since we just move randomly
+            distance_to_goal = ((drone.position.x - x)**2 +
+                                (drone.position.y - y)**2)**0.5
+
+            print("Distance to goal is now", distance_to_goal)
+            if loccounter > 3:
+                loccounter=0
+                break
+
+            # Generate some random point and rotation
+        target_x = x #random.randint(-3, 3)
+        target_y = y #random.randint(-3, 3)
+            
+        print('current position',x,y,drone.position.x,drone.position.y)
+            # Move to random point
+        drone.set_target(target_x, target_y)
+        print("distance to target:", distance_to_target)
+
 def main():
     # Init ROS node
     rospy.init_node('task', anonymous=True)
@@ -73,34 +111,11 @@ def main():
     rate = rospy.Rate(30)
     print('there is a test')
     i = 0
-    while False:#hnot rospy.is_shutdown():
-        i=i+1
-        rate.sleep()
-        # -------------------------------
-        # ------Replace this example-----
-        # ---------with your code!-------
-        # -------------------------------
-        # Find how far we are away from target
-        distance_to_target = ((target_x - drone.position.x)**2 +
-                              (target_y - drone.position.y)**2)**0.5
+    targets = [[0,0],[1,0],[1,7],[2,7],[16,7],[17,7],[19,7],[19,20]]
 
-        # Do special action if we are close
-        if distance_to_target < 0.5:
-            # Print current distance to goal. Note that we 
-            # wont reach the goal, since we just move randomly
-            distance_to_goal = ((drone.position.x - goal.x)**2 +
-                                (drone.position.y - goal.y)**2)**0.5
 
-            print("Distance to goal is now", distance_to_goal)
-
-            # Generate some random point and rotation
-        target_x = 3.0 #random.randint(-3, 3)
-        target_y = 3.0 #random.randint(-3, 3)
-            
-        print(target_x)
-            # Move to random point
-        drone.set_target(target_x, target_y)
-        print("distance to target:", distance_to_target)
+    for t in targets:
+        goto(t[0],t[1],rospy,rate,drone)
 
 
 if __name__ == '__main__':
